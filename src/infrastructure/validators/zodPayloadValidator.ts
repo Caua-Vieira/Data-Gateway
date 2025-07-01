@@ -1,26 +1,33 @@
-// src/infra/validators/ZodPayloadValidator.ts
-
 import { z } from 'zod';
 import { AbstractPayloadValidator } from '../../domain/contracts/abstractPayloadValidator';
-import { Payload } from '../../domain/entities/payloadEntity';
+import { OrderPayload } from '../../domain/types/orderPayload';
 
-const payloadSchema = z.object({
-    cpf: z.string().regex(/^\d{11}$/, 'CPF deve ter 11 dígitos'),
-    nome: z.string().min(3),
+const orderSchema = z.object({
+    userId: z.string().uuid(),
+    items: z.array(
+        z.object({
+            productId: z.string().uuid(),
+            quantity: z.number().int().positive(),
+        })
+    ).nonempty('Deve haver ao menos um item no pedido'),
+    totalAmount: z.number().positive('Total deve ser maior que zero'),
+    shippingAddress: z.string().min(5),
     createdAt: z.string().refine(val => !isNaN(Date.parse(val)), {
         message: 'Data inválida',
     }),
 });
 
-export class ZodPayloadValidator implements AbstractPayloadValidator {
-    validate(data: any): Payload {
-        const parsed = payloadSchema.parse(data);
+export class ZodOrderPayloadValidator implements AbstractPayloadValidator {
+    validate(data: any): OrderPayload {
+        const parsed = orderSchema.parse(data);
 
-        return new Payload(
-            crypto.randomUUID(),
-            parsed.cpf,
-            parsed.nome,
-            new Date(parsed.createdAt)
-        );
+        return {
+            orderId: crypto.randomUUID(),
+            userId: parsed.userId,
+            items: parsed.items,
+            totalAmount: parsed.totalAmount,
+            shippingAddress: parsed.shippingAddress,
+            createdAt: new Date(parsed.createdAt),
+        };
     }
 }
