@@ -1,13 +1,13 @@
 import { Inject } from "typescript-ioc";
 import { AbstractPayloadValidator } from "../../domain/contracts/abstractPayloadValidator";
-import { AbstractQueueRepository } from "../../domain/contracts/abstractQueryRepository";
+import { AbstractQueueProducer } from "../../domain/contracts/abstractQueueProducer";
 import { OrderPayload } from "../../domain/types/orderPayload";
 
 export class ValidatePayloadUseCase {
 
     constructor(
         @Inject private readonly validator: AbstractPayloadValidator,
-        @Inject private readonly queue: AbstractQueueRepository
+        @Inject private readonly queue: AbstractQueueProducer
     ) { }
 
     async execute(input: any): Promise<OrderPayload> {
