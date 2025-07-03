@@ -1,7 +1,7 @@
-import { AbstractQueueRepository } from "../../domain/contracts/abstractQueryRepository";
+import { AbstractQueueProducer } from "../../domain/contracts/abstractQueueProducer";
 import amqp from 'amqplib';
 
-export class QueueRepository implements AbstractQueueRepository {
+export class QueueProducer implements AbstractQueueProducer {
     private channel: amqp.Channel | null = null;
 
     async connect(): Promise<void> {

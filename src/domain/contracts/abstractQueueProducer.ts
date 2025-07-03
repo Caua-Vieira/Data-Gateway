@@ -1,3 +1,3 @@
-export abstract class AbstractQueueRepository {
+export abstract class AbstractQueueProducer {
     abstract publish(data: any): Promise<void>;
 }
