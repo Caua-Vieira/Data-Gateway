@@ -1,4 +1,4 @@
-import { NextFunction, Request } from 'express';
+import { Request, Response, NextFunction } from 'express';
 import { AuthException } from '../../domain/errors/errors';
 import jwt from 'jsonwebtoken';
 
@@ -6,7 +6,7 @@ export const jwtMiddleware = (req: Request, next: NextFunction) => {
     const authHeader = req.headers.authorization;
 
     if (!authHeader?.startsWith('Bearer ')) {
-        throw new AuthException('Token não informado');
+        return next(new AuthException('Token não informado'));
     }
 
     const token = authHeader.split(' ')[1];
@@ -14,9 +14,9 @@ export const jwtMiddleware = (req: Request, next: NextFunction) => {
 
     try {
         const decoded = jwt.verify(token, JWT_SECRET);
-        // req.user = decoded;
+        //req.user = decoded;
         next();
-    } catch {
-        throw new AuthException('Token inválido');
+    } catch (err) {
+        return next(new AuthException('Token inválido'));
     }
 };
